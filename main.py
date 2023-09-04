@@ -30,3 +30,15 @@ def create_post(post: schemas.Post, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_post)
     return new_post
+
+
+@app.get('/posts')
+def get_all_posts(db: Session = Depends(get_db)):
+    posts = db.query(models.Post).all()
+    return posts
+
+
+@app.get('/posts/{id}')
+def get_post_by_id(id: int, db: Session = Depends(get_db)):
+    post = db.query(models.Post).filter(models.Post.id == id).first()
+    return post
