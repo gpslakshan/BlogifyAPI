@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, status
 from sqlalchemy.orm import Session
 from database import engine, SessionLocal
 from datetime import datetime
@@ -18,7 +18,7 @@ def get_db():
         db.close()
 
 
-@app.post('/posts')
+@app.post('/posts', status_code=status.HTTP_201_CREATED)
 def create_post(post: schemas.Post, db: Session = Depends(get_db)):
     new_post = models.Post(
         title=post.title,
