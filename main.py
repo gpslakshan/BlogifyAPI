@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, status
+from fastapi import FastAPI, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 from database import engine, SessionLocal
 from datetime import datetime
@@ -41,6 +41,9 @@ def get_all_posts(db: Session = Depends(get_db)):
 @app.get('/posts/{id}')
 def get_post_by_id(id: int, db: Session = Depends(get_db)):
     post = db.query(models.Post).filter(models.Post.id == id).first()
+    if not post:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
     return post
 
 
@@ -56,7 +59,8 @@ def delete_post_by_id(id: int, db: Session = Depends(get_db)):
 def update_post_by_id(id: int, request: schemas.Post, db: Session = Depends(get_db)):
     post = db.query(models.Post).filter(models.Post.id == id)
     if not post.first():
-        pass
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
     post.update(request.model_dump())
     db.commit()
     return {"mesg": f'Blog Post with id: {id} successfully updated.'}
