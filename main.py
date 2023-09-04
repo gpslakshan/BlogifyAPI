@@ -42,3 +42,11 @@ def get_all_posts(db: Session = Depends(get_db)):
 def get_post_by_id(id: int, db: Session = Depends(get_db)):
     post = db.query(models.Post).filter(models.Post.id == id).first()
     return post
+
+
+@app.delete('/posts/{id}')
+def delete_post_by_id(id: int, db: Session = Depends(get_db)):
+    db.query(models.Post).filter(models.Post.id ==
+                                 id).delete(synchronize_session=False)
+    db.commit()
+    return {"mesg": f'Blog Post with id: {id} deleted successfully.'}
